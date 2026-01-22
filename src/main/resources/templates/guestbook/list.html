@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+    <th:block th:fragment="content">
+        <h1 class="mt-4">GuestBook List page</h1>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Writer</th>
+                <th scope="col">Regdate</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${result.data}">
+                <th scope="row">[[${item.gno}]]</th>
+                <td>[[${item.title}]]</td>
+                <td>[[${item.writer}]]</td>
+                <td>[[${#temporals.format(item.regDate, 'yyyy/MM/dd')}]]</td>
+            </tr>
+            </tbody>
+        </table>
+        <ul class="pagination h-100 justify-content-center align-items-center">
+            <li class="page-item" th:classappend="${!result.prev} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{'/guestbook/list' + ${pageRequestDTO.getLink(result.start)}}"
+                   th:if="${result.prev}">Previous</a>
+                <span th:class="page-link" th:unless="${result.prev}">Previous</span>
+            </li>
+            <li class="page-item"
+                th:each="pageNum : ${#numbers.sequence(result.start, result.end)}"
+                th:classappend="${result.page == pageNum ?: 'active'}">
+                <a class="page-link"
+                   th:href="@{'/guestbook/list' + ${pageRequestDTO.getLink(pageNum)}}"
+                   th:text="${pageNum}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${!result.next} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{'/guestbook/list' + ${pageRequestDTO.getLink(result.end + 1)}}"
+                   th:if="${result.next}">Next</a>
+                <span class="page-link" th:unless="${result.next}">Next</span>
+            </li>
+        </ul>
+    </th:block>
+</th:block>
+</html>
