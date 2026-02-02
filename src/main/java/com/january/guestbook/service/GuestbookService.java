@@ -8,6 +8,7 @@ import java.awt.print.Pageable;
 
 public interface GuestbookService {
 
+    PageResultDTO<Guestbook> guestbookList(PageRequestDTO requestDTO);
     Long register(Guestbook guestbook);
 
     PageResultDTO<Guestbook> guestbookList(PageRequestDTO requestDTO);
