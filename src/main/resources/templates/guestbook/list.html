@@ -20,7 +20,11 @@
             </thead>
             <tbody>
             <tr th:each="item : ${result.data}">
-                <th scope="row">[[${item.gno}]]</th>
+                <th scope="row">
+                    <a th:href="@{/guestbook/read(gno = ${item.gno}, page = ${result.page})}">
+                    [[${item.gno}]]
+                    </a>
+                </th>
                 <td>[[${item.title}]]</td>
                 <td>[[${item.writer}]]</td>
                 <td>[[${#temporals.format(item.regDate, 'yyyy/MM/dd')}]]</td>

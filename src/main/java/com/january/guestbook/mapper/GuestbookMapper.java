@@ -19,6 +19,6 @@ public interface GuestbookMapper {
 
     void update(Guestbook guestbook);
 
-    void delete(Long gno);
+    void deleteByGno(Long gno);
 
 }

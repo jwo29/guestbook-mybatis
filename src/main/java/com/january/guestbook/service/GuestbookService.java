@@ -4,12 +4,11 @@ import com.january.guestbook.domain.Guestbook;
 import com.january.guestbook.dto.PageRequestDTO;
 import com.january.guestbook.dto.PageResultDTO;
 
-import java.awt.print.Pageable;
-
 public interface GuestbookService {
 
     PageResultDTO<Guestbook> guestbookList(PageRequestDTO requestDTO);
     Long register(Guestbook guestbook);
-
-    PageResultDTO<Guestbook> guestbookList(PageRequestDTO requestDTO);
+    Guestbook read(Long gno);
+    void modify(Guestbook guestbook);
+    void delete(Long gno);
 }

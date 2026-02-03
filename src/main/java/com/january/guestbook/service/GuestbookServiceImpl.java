@@ -48,6 +48,28 @@ public class GuestbookServiceImpl implements GuestbookService {
         return guestbook.getGno();
     }
 
+    @Override
+    public Guestbook read(Long gno) {
+        return guestbookMapper.findByGno(gno);
+    }
+
+    @Override
+    public void modify(Guestbook guestbook) {
+        Guestbook update = guestbookMapper.findByGno(guestbook.getGno());
+
+        if (update != null) {
+            update.changeTitle(guestbook.getTitle());
+            update.changeContent(guestbook.getContent());
+
+            guestbookMapper.update(update);
+        }
+    }
+
+    @Override
+    public void delete(Long gno) {
+        guestbookMapper.deleteByGno(gno);
+    }
+
     /**
      * 페이징 처리된 방명록 목록 조회
      * @param requestDTO 페이지 요청 정보 (page, size)
