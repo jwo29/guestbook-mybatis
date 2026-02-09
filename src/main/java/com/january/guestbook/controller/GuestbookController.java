@@ -103,6 +103,8 @@ public class GuestbookController {
         // => /read 페이지는 gno, page 파라미터가 필요하니까! -> 사용자가 URL을 북마크하거나 공유할 수 있어야 하니까!
         redirectAttributes.addAttribute("gno", guestbook.getGno()); // addFlashAttribute 사용하면 /read 메서드의 long gno 파라미터가 값을 받지 못 한다(URL에 없으니까)
         redirectAttributes.addAttribute("page", requestDTO.getPage());
+        redirectAttributes.addAttribute("type", requestDTO.getType());
+        redirectAttributes.addAttribute("keyword", requestDTO.getKeyword());
 
         return "redirect:/guestbook/read";
     }

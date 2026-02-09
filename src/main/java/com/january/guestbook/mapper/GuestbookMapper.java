@@ -13,7 +13,7 @@ public interface GuestbookMapper {
 
     List<Guestbook> findAll(PageRequestDTO requestDTO);
 
-    long countAll();
+    long countAll(PageRequestDTO requestDTO);
 
     void insert(Guestbook guestbook);
 

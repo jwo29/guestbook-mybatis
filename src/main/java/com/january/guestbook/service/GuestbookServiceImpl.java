@@ -81,7 +81,7 @@ public class GuestbookServiceImpl implements GuestbookService {
         log.info("Get guestbook list - page: {}, size: {}", requestDTO.getPage(), requestDTO.getSize());
 
         // 전체 게시글 수 조회
-        long totalCount = guestbookMapper.countAll();
+        long totalCount = guestbookMapper.countAll(requestDTO);
         log.info("Total count: {}", totalCount);
 
         // 페이징 처리된 목록 조회

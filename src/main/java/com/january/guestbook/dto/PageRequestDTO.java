@@ -16,6 +16,9 @@ public class PageRequestDTO {
     @Builder.Default
     private int size = 10;
 
+    private String type;
+    private String keyword;
+
     // MyBatis에서 사용할 OFFSET 계산
     public int getOffset() {
         return (page - 1) * size;
