@@ -1,16 +1,16 @@
 package com.january.guestbook.controller;
 
 import com.january.guestbook.domain.Board;
-import com.january.guestbook.dto.BoardListDTO;
-import com.january.guestbook.dto.BoardModifyDTO;
-import com.january.guestbook.dto.PageRequestDTO;
-import com.january.guestbook.dto.PageResultDTO;
+import com.january.guestbook.dto.*;
 import com.january.guestbook.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -58,11 +58,11 @@ public class BoardController {
     }
 
     @PostMapping("/register")
-    public String registerPost(Board board, RedirectAttributes redirectAttributes) {
-        log.info("Register post: {}", board);
+    public String registerPost(BoardRegisterDTO boardRegisterDTO, RedirectAttributes redirectAttributes) {
+        log.info("Register post: {}", boardRegisterDTO);
 
         // 새로 추가된 엔티티의 번호
-        Long gno = boardService.register(board);
+        Long gno = boardService.register(boardRegisterDTO);
 
         // addFlashAttribute: 단 한 번만 데이터를 전달하는 용도. 왜? addAttribute와는 무슨 차이?
         // ㄴ 데이터 전달 방식과 URL 노출 여부에 차이가 있음

@@ -1,11 +1,10 @@
 package com.january.guestbook.service;
 
 import com.january.guestbook.domain.Board;
-import com.january.guestbook.dto.BoardListDTO;
-import com.january.guestbook.dto.BoardModifyDTO;
-import com.january.guestbook.dto.PageRequestDTO;
-import com.january.guestbook.dto.PageResultDTO;
+import com.january.guestbook.domain.Member;
+import com.january.guestbook.dto.*;
 import com.january.guestbook.mapper.BoardMapper;
+import com.january.guestbook.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -33,21 +32,36 @@ import java.util.List;
 public class BoardServiceImpl implements BoardService {
 
     private final BoardMapper boardMapper;
+    private final MemberMapper memberMapper;
 
     /**
      * 방명록 등록
-     * @param board 등록할 방명록 정보
+     * @param boardRegisterDTO 등록할 방명록 정보
      * @return 등록된 게시글 번호(gno)
      */
     @Override
     @Transactional
-    public Long register(Board board) {
-        log.info("Register board: {}", board);
+    public Long register(BoardRegisterDTO boardRegisterDTO) {
+        log.info("Register board: {}", boardRegisterDTO);
 
-        boardMapper.insert(board);
+        Member member = memberMapper.getMemberByEmail(boardRegisterDTO.getWriterEmail());
 
-        // MyBatis useGeneratedKeys 설정으로 자동 생성된 키가 board 객체에 설정됨
-        return board.getGno();
+        if (member != null) {
+            Board board = Board.builder()
+                    .title(boardRegisterDTO.getTitle())
+                    .content(boardRegisterDTO.getContent())
+                    .writer(member)
+                    .build();
+
+            boardMapper.insert(board);
+
+            // MyBatis useGeneratedKeys 설정으로 자동 생성된 키가 board 객체에 설정됨
+            return board.getGno();
+        } else {
+            // todo user not found;
+            return null;
+        }
+
     }
 
     @Override

@@ -4,6 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.january.guestbook.mapper.MemberMapper">
 
+    <select id="getMemberByEmail">
+        select mno
+             , name
+             , email
+        from members
+        where email = #{email}
+    </select>
+
     <insert id="save" useGeneratedKeys="true" keyProperty="mno">
         INSERT INTO members (email, password, name, reg_date, mod_date)
         VALUES (#{email}, #{password}, #{name}, now(), now());

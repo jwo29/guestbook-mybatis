@@ -1,8 +1,7 @@
 package com.january.guestbook.service;
 
-import com.january.guestbook.domain.Board;
-import com.january.guestbook.domain.Member;
 import com.january.guestbook.dto.BoardListDTO;
+import com.january.guestbook.dto.BoardRegisterDTO;
 import com.january.guestbook.dto.PageRequestDTO;
 import com.january.guestbook.dto.PageResultDTO;
 import org.junit.jupiter.api.Test;
@@ -17,13 +16,13 @@ public class BoardServiceTest {
 
     @Test
     public void testRegister() {
-        Board board = Board.builder()
-                .title("Sample Title")
-                .content("Sample Content")
-                .writer(Member.builder().build())
-                .build();
+        BoardRegisterDTO boardRegisterDTO = new BoardRegisterDTO();
 
-        boardService.register(board);
+        boardRegisterDTO.setTitle("Sample Title");
+        boardRegisterDTO.setContent("Sample Content");
+        boardRegisterDTO.setWriterEmail("user100@aaa.com");
+
+        boardService.register(boardRegisterDTO);
     }
 
     @Test
