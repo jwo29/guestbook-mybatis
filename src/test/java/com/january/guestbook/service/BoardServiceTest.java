@@ -1,6 +1,8 @@
 package com.january.guestbook.service;
 
-import com.january.guestbook.domain.Guestbook;
+import com.january.guestbook.domain.Board;
+import com.january.guestbook.domain.Member;
+import com.january.guestbook.dto.BoardListDTO;
 import com.january.guestbook.dto.PageRequestDTO;
 import com.january.guestbook.dto.PageResultDTO;
 import org.junit.jupiter.api.Test;
@@ -8,20 +10,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class GuestbookServiceTest {
+public class BoardServiceTest {
 
     @Autowired
-    private GuestbookService guestbookService;
+    private BoardService boardService;
 
     @Test
     public void testRegister() {
-        Guestbook guestbook = Guestbook.builder()
+        Board board = Board.builder()
                 .title("Sample Title")
                 .content("Sample Content")
-                .writer("user0")
+                .writer(Member.builder().build())
                 .build();
 
-        guestbookService.register(guestbook);
+        boardService.register(board);
     }
 
     @Test
@@ -33,15 +35,15 @@ public class GuestbookServiceTest {
                 .keyword("스프링")
                 .build();
 
-        PageResultDTO<Guestbook> resultDTO = guestbookService.guestbookList(pageRequestDTO);
+        PageResultDTO<BoardListDTO> resultDTO = boardService.boardList(pageRequestDTO);
 
         System.out.println("PREV: " + resultDTO.isPrev());
         System.out.println("NEXT: " + resultDTO.isNext());
         System.out.println("TOTAL: " + resultDTO.getTotalPage());
 
         System.out.println("=====================================");
-        for (Guestbook guestbook : resultDTO.getData()) {
-            System.out.println(guestbook);
+        for (BoardListDTO board : resultDTO.getData()) {
+            System.out.println(board);
         }
 
         System.out.println("=====================================");

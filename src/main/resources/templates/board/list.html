@@ -4,12 +4,12 @@
     <th:block th:fragment="content">
         <h1 class="mt-4">GuestBook List page
             <span>
-                <a th:href="@{/guestbook/register}">
+                <a th:href="@{/board/register}">
                     <button type="button" class="btn btn-outline-primary">REGISTER</button>
                 </a>
             </span>
         </h1>
-        <form th:action="@{/guestbook/list}" method="get" id="searchForm">
+        <form th:action="@{/board/list}" method="get" id="searchForm">
             <div class="input-group">
                 <input type="hidden" name="page" value="1">
                 <div class="input-group-prepend">
@@ -41,12 +41,12 @@
             <tbody>
             <tr th:each="item : ${result.data}">
                 <th scope="row">
-                    <a th:href="@{/guestbook/read(gno = ${item.gno}, page = ${result.page}, type=${pageRequestDTO.type}, keyword=${pageRequestDTO.keyword})}">
+                    <a th:href="@{/board/read(gno = ${item.gno}, page = ${result.page}, type=${pageRequestDTO.type}, keyword=${pageRequestDTO.keyword})}">
                     [[${item.gno}]]
                     </a>
                 </th>
-                <td>[[${item.title}]]</td>
-                <td>[[${item.writer}]]</td>
+                <td>[[${item.title}]] ---------------- [<b th:text="${item.replyCount}"></b>]</td>
+                <td>[[${item.writerName}]] <small>[[${item.writerEmail}]]</small></td>
                 <td>[[${#temporals.format(item.regDate, 'yyyy/MM/dd')}]]</td>
             </tr>
             </tbody>
@@ -54,7 +54,7 @@
         <ul class="pagination h-100 justify-content-center align-items-center">
             <li class="page-item" th:classappend="${!result.prev} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/guestbook/list(page = ${result.start - 1},
+                   th:href="@{/board/list(page = ${result.start - 1},
                    type = ${pageRequestDTO.type},
                    keyword = ${pageRequestDTO.keyword})}"
                    th:if="${result.prev}">Previous</a>
@@ -64,14 +64,14 @@
                 th:each="pageNum : ${#numbers.sequence(result.start, result.end)}"
                 th:classappend="${result.page == pageNum ?: 'active'}">
                 <a class="page-link"
-                   th:href="@{/guestbook/list(page = ${pageNum},
+                   th:href="@{/board/list(page = ${pageNum},
                    type = ${pageRequestDTO.type},
                    keyword = ${pageRequestDTO.keyword})}"
                    th:text="${pageNum}">1</a>
             </li>
             <li class="page-item" th:classappend="${!result.next} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/guestbook/list(page = ${result.end + 1},
+                   th:href="@{/board/list(page = ${result.end + 1},
                    type = ${pageRequestDTO.type},
                    keyword = ${pageRequestDTO.keyword})}"
                    th:if="${result.next}">Next</a>

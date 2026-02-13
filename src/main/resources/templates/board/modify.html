@@ -8,7 +8,7 @@
 <th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
     <th:block th:fragment="content">
         <h1 class="mt-4">GuestBook Read Page</h1>
-        <form action="/guestbook/modify" method="post">
+        <form action="/board/modify" method="post">
             <!--      페이지 번호      -->
             <input type="hidden" name="page" th:value="${requestDto.page}">
             <input type="hidden" name="type" th:value="${requestDto.type}">
@@ -28,7 +28,7 @@
             </div>
             <div class="form-group">
                 <label>Writer</label>
-                <input type="text" class="form-control" name="writer" th:value="${dto.writer}" readonly>
+                <input type="text" class="form-control" th:value="${dto.writer.name}" readonly>
             </div>
             <div class="form-group">
                 <label>RegDate</label>
@@ -51,7 +51,6 @@
             // page와 같은 파라미터 외에 다른 파라미터들은 별도로 필요하지 않음.
             // 제거한 상태로 처리하는 것이 깔끔함.
             $('.listBtn').click(function () {
-                // var pageInfo = $('input[name="page"]')
                 var page = $('input[name="page"]');
                 var type = $('input[name="type"]');
                 var keyword = $('input[name="keyword"]');
@@ -63,7 +62,7 @@
                 actionForm.append(keyword);
 
                 actionForm
-                    .attr("action", "/guestbook/list")
+                    .attr("action", "/board/list")
                     .attr("method", "get")
 
                 // console.log(actionForm.html()) // 먼저 확인 후에 주석 처리
@@ -77,15 +76,17 @@
                 }
 
                 actionForm
-                    .attr("action", "/guestbook/modify")
+                    .attr("action", "/board/modify")
                     .attr("method", "post");
+
+                console.log(actionForm.html())
 
                 actionForm.submit();
             })
 
             $('.removeBtn').click(function () {
                 actionForm
-                    .attr("action", "/guestbook/remove")
+                    .attr("action", "/board/remove")
                     .attr("method", "post");
 
                 actionForm.submit();

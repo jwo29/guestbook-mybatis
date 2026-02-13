@@ -1,9 +1,11 @@
 package com.january.guestbook.service;
 
-import com.january.guestbook.domain.Guestbook;
+import com.january.guestbook.domain.Board;
+import com.january.guestbook.dto.BoardListDTO;
+import com.january.guestbook.dto.BoardModifyDTO;
 import com.january.guestbook.dto.PageRequestDTO;
 import com.january.guestbook.dto.PageResultDTO;
-import com.january.guestbook.mapper.GuestbookMapper;
+import com.january.guestbook.mapper.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -28,46 +30,46 @@ import java.util.List;
 @Service
 @Log4j2
 @RequiredArgsConstructor // 의존성 자동 주입
-public class GuestbookServiceImpl implements GuestbookService {
+public class BoardServiceImpl implements BoardService {
 
-    private final GuestbookMapper guestbookMapper;
+    private final BoardMapper boardMapper;
 
     /**
      * 방명록 등록
-     * @param guestbook 등록할 방명록 정보
+     * @param board 등록할 방명록 정보
      * @return 등록된 게시글 번호(gno)
      */
     @Override
     @Transactional
-    public Long register(Guestbook guestbook) {
-        log.info("Register guestbook: {}", guestbook);
+    public Long register(Board board) {
+        log.info("Register board: {}", board);
 
-        guestbookMapper.insert(guestbook);
+        boardMapper.insert(board);
 
-        // MyBatis useGeneratedKeys 설정으로 자동 생성된 키가 guestbook 객체에 설정됨
-        return guestbook.getGno();
+        // MyBatis useGeneratedKeys 설정으로 자동 생성된 키가 board 객체에 설정됨
+        return board.getGno();
     }
 
     @Override
-    public Guestbook read(Long gno) {
-        return guestbookMapper.findByGno(gno);
+    public Board read(Long gno) {
+        return boardMapper.findByGno(gno);
     }
 
     @Override
-    public void modify(Guestbook guestbook) {
-        Guestbook update = guestbookMapper.findByGno(guestbook.getGno());
+    public void modify(BoardModifyDTO boardModifyDTO) {
+        Board update = boardMapper.findByGno(boardModifyDTO.getGno());
 
         if (update != null) {
-            update.changeTitle(guestbook.getTitle());
-            update.changeContent(guestbook.getContent());
+            update.changeTitle(boardModifyDTO.getTitle());
+            update.changeContent(boardModifyDTO.getContent());
 
-            guestbookMapper.update(update);
+            boardMapper.update(update);
         }
     }
 
     @Override
     public void delete(Long gno) {
-        guestbookMapper.deleteByGno(gno);
+        boardMapper.deleteByGno(gno);
     }
 
     /**
@@ -77,23 +79,23 @@ public class GuestbookServiceImpl implements GuestbookService {
      */
     @Override
     @Transactional(readOnly = true)
-    public PageResultDTO<Guestbook> guestbookList(PageRequestDTO requestDTO) {
-        log.info("Get guestbook list - page: {}, size: {}", requestDTO.getPage(), requestDTO.getSize());
+    public PageResultDTO<BoardListDTO> boardList(PageRequestDTO requestDTO) {
+        log.info("Get board list - page: {}, size: {}", requestDTO.getPage(), requestDTO.getSize());
 
         // 전체 게시글 수 조회
-        long totalCount = guestbookMapper.countAll(requestDTO);
+        long totalCount = boardMapper.countAll(requestDTO);
         log.info("Total count: {}", totalCount);
 
         // 페이징 처리된 목록 조회
-        List<Guestbook> guestbookList = guestbookMapper.findAll(requestDTO);
-        log.info("Retrieved {} guestbooks", guestbookList.size());
+        List<BoardListDTO> boardList = boardMapper.findAll(requestDTO);
+        log.info("Retrieved {} boards", boardList.size());
 
         // PageResultDTO 생성 및 반환
         return new PageResultDTO<>(
-            guestbookList,
-            totalCount,
-            requestDTO.getPage(),
-            requestDTO.getSize()
+                boardList,
+                totalCount,
+                requestDTO.getPage(),
+                requestDTO.getSize()
         );
     }
 }

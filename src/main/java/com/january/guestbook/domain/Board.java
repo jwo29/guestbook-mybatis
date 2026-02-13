@@ -1,17 +1,19 @@
 package com.january.guestbook.domain;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Builder
-@Data
-public class Guestbook {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Board {
     private Long gno;
     private String title;
     private String content;
-    private String writer;
+    private Member writer;
+
     private LocalDateTime regDate;
     private LocalDateTime modDate;
 
