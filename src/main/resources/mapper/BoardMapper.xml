@@ -31,10 +31,10 @@
                     OR title LIKE CONCAT('%', #{keyword}, '%')
                 </if>
                 <if test='type.contains("c")'>
-                    OR content LIKE CONCAT('%', #{keyword}, '%')
+                    OR LOWER(content) LIKE LOWER(CONCAT('%', #{keyword}, '%'))
                 </if>
                 <if test='type.contains("w")'>
-                    OR m.name LIKE CONCAT('%', #{keyword}, '%')
+                    OR LOWER(m.name) LIKE LOWER(CONCAT('%', #{keyword}, '%'))
                 </if>
             </trim>
             )
@@ -61,10 +61,10 @@
                     OR title LIKE CONCAT('%', #{keyword}, '%')
                 </if>
                 <if test='type.contains("c")'>
-                    OR content LIKE CONCAT('%', #{keyword}, '%')
+                    OR LOWER(content) LIKE LOWER(CONCAT('%', #{keyword}, '%'))
                 </if>
                 <if test='type.contains("w")'>
-                    OR m.name LIKE CONCAT('%', #{keyword}, '%')
+                    OR LOWER(m.name) LIKE LOWER(CONCAT('%', #{keyword}, '%'))
                 </if>
             </trim>
             )
