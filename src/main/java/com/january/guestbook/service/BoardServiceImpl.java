@@ -5,6 +5,7 @@ import com.january.guestbook.domain.Member;
 import com.january.guestbook.dto.*;
 import com.january.guestbook.mapper.BoardMapper;
 import com.january.guestbook.mapper.MemberMapper;
+import com.january.guestbook.mapper.ReplyMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class BoardServiceImpl implements BoardService {
 
     private final BoardMapper boardMapper;
     private final MemberMapper memberMapper;
+    private final ReplyMapper replyMapper;
 
     /**
      * 방명록 등록
@@ -84,6 +86,13 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public void delete(Long gno) {
         boardMapper.deleteByGno(gno);
+    }
+
+    @Transactional
+    @Override
+    public void deleteWithReplys(Long gno) {
+        replyMapper.deleteByGno(gno); // 댓글 먼저 전체 삭제
+        boardMapper.deleteByGno(gno); // 게시글 삭제
     }
 
     /**

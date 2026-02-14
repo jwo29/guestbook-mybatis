@@ -7,4 +7,14 @@
         INSERT INTO replys (replyer, text, gno)
         VALUES (#{replyer}, #{text}, #{board.gno})
     </insert>
+
+    <delete id="deleteByGno">
+        delete from replys
+        where gno = #{gno};
+    </delete>
+
+    <delete id="deleteByRno">
+        delete from replys
+        where rno = #{rno};
+    </delete>
 </mapper>

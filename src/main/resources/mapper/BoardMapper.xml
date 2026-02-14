@@ -21,7 +21,8 @@
     <!-- 전체 게시글 수 조회 -->
     <select id="countAll" resultType="long">
         SELECT COUNT(*)
-        FROM boards
+        FROM boards b
+        INNER JOIN members m ON b.writer_no = m.mno
         WHERE gno > 0
         <if test="type != null and keyword != null and keyword != ''">
             AND (
@@ -33,7 +34,7 @@
                     OR content LIKE CONCAT('%', #{keyword}, '%')
                 </if>
                 <if test='type.contains("w")'>
-                    OR writer LIKE CONCAT('%', #{keyword}, '%')
+                    OR m.name LIKE CONCAT('%', #{keyword}, '%')
                 </if>
             </trim>
             )
@@ -63,7 +64,7 @@
                     OR content LIKE CONCAT('%', #{keyword}, '%')
                 </if>
                 <if test='type.contains("w")'>
-                    OR writer LIKE CONCAT('%', #{keyword}, '%')
+                    OR m.name LIKE CONCAT('%', #{keyword}, '%')
                 </if>
             </trim>
             )

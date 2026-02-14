@@ -10,4 +10,5 @@ public interface BoardService {
     Board read(Long gno);
     void modify(BoardModifyDTO boardModifyDTO);
     void delete(Long gno);
+    void deleteWithReplys(Long gno);
 }

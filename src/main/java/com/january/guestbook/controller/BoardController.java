@@ -114,7 +114,7 @@ public class BoardController {
     @PostMapping("/remove")
     public String removePost(long gno, RedirectAttributes redirectAttributes) {
         log.info("Remove post: {}", gno);
-        boardService.delete(gno);
+        boardService.deleteWithReplys(gno);
         redirectAttributes.addFlashAttribute("msg", gno);
         return "redirect:/board/list";
     }
