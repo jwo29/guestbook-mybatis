@@ -1,6 +1,5 @@
 package com.january.guestbook.controller;
 
-import com.january.guestbook.domain.Board;
 import com.january.guestbook.dto.*;
 import com.january.guestbook.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -83,8 +82,8 @@ public class BoardController {
                          @ModelAttribute("requestDto") PageRequestDTO pageRequestDTO, // @ModelAttribute 선언은 없어도 처리가 가능하지만 명시적으로 "requestDto"라는 이름으로 처리
                          Model model) {
         log.info("Read post: {}", gno);
-        Board board = boardService.read(gno);
-        model.addAttribute("dto", board);
+        BoardDTO boardDTO = boardService.read(gno);
+        model.addAttribute("dto", boardDTO);
     }
 
     @PostMapping("/modify")

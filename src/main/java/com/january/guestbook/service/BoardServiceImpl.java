@@ -67,8 +67,8 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Board read(Long gno) {
-        return boardMapper.findByGno(gno);
+    public BoardDTO read(Long gno) {
+        return boardMapper.findByGnoWithReplyCount(gno);
     }
 
     @Override

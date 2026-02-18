@@ -1,6 +1,7 @@
 package com.january.guestbook.mapper;
 
 import com.january.guestbook.domain.Board;
+import com.january.guestbook.dto.BoardDTO;
 import com.january.guestbook.dto.BoardListDTO;
 import com.january.guestbook.dto.PageRequestDTO;
 import org.apache.ibatis.annotations.Mapper;
@@ -11,6 +12,8 @@ import java.util.List;
 public interface BoardMapper {
 
     Board findByGno(Long gno);
+
+    BoardDTO findByGnoWithReplyCount(Long gno);
 
     List<BoardListDTO> findAll(PageRequestDTO requestDTO);
 

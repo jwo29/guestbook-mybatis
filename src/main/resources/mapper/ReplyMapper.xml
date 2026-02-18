@@ -3,10 +3,39 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.january.guestbook.mapper.ReplyMapper">
+
+    <select id="getReplyById">
+        select rno
+             , text
+             , replyer
+             , reg_date
+             , mod_date
+        from replys
+        where rno = #{rno}
+    </select>
+
+    <select id="getRepliesByGnoOrderByBoard">
+        select rno
+             , text
+             , replyer
+             , reg_date
+             , mod_date
+        from replys
+        where gno = #{gno}
+        order by rno;
+    </select>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="rno">
         INSERT INTO replys (replyer, text, gno)
         VALUES (#{replyer}, #{text}, #{board.gno})
     </insert>
+
+    <update id="modify">
+        update replys
+        set text = #{text}
+          , mod_date = NOW()
+        where rno = #{rno}
+    </update>
 
     <delete id="deleteByGno">
         delete from replys

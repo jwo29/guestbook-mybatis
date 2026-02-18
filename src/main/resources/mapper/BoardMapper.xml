@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.january.guestbook.mapper.BoardMapper">
 
-    <!-- Guestbook 결과 매핑 -->
+    <!-- Board 결과 매핑 -->
     <resultMap id="boardResultMap" type="com.january.guestbook.domain.Board">
         <id property="gno" column="gno"/>
         <result property="title" column="title"/>
@@ -87,6 +87,23 @@
         FROM boards b
         INNER JOIN members m ON b.writer_no = m.mno
         WHERE gno = #{gno}
+    </select>
+
+    <!-- 단건 조회 with 댓글 수 -->
+    <select id="findByGnoWithReplyCount">
+        SELECT b.gno
+             , b.title
+             , b.content
+             , b.reg_date as reg_date
+             , b.mod_date as mod_date
+             , m.name as writer_name
+             , m.email as writer_email
+             , count(r.rno) as reply_count
+        FROM boards b
+        INNER JOIN members m ON b.writer_no = m.mno
+        LEFT JOIN replys r ON b.gno = r.gno
+        WHERE b.gno = #{gno}
+        GROUP BY b.gno, m.name, m.email
     </select>
 
     <!-- 게시글 등록 -->
