@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.january.guestbook.mapper.ReviewMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="reviewNum">
+        INSERT INTO reviews (grade, text, member_no, movie_no, reg_date, mod_date)
+        VALUES (#{grade}, #{text}, #{member.mno}, #{movie.mno}, now(), now());
+    </insert>
+</mapper>

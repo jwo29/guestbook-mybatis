@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.january.guestbook.mapper.MovieMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="mno">
+        INSERT INTO movies (title, reg_date, mod_date)
+        values (#{title}, now(), now());
+    </insert>
+
+    <select id="countAll">
+        select count(*)
+        from movies;
+    </select>
+
+    <select id="findAll">
+        select a.mno
+             , a.title
+             , max(inum) as image_num
+             , count(r) as review_count
+             , avg(r.grade) as grade_average
+             , a.reg_date
+        from movies a
+            left join movie_images b on a.mno = b.movie_mno
+            left join reviews r on a.mno = r.movie_no
+        group by a.mno;
+    </select>
+
+</mapper>
