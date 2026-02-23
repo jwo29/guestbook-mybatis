@@ -35,4 +35,17 @@ public class ReviewMapperTest {
             reviewMapper.insert(review);
         });
     }
+
+    @Test
+    public void findByMovieTest() {
+
+        // 영화 번호
+        Long mno = (long)(Math.random()*100) + 1;
+        System.out.println("mno: " + mno.toString());
+
+        Review review = reviewMapper.findByMovie(Movie.builder().mno(mno).build());
+
+        System.out.println(review);
+
+    }
 }

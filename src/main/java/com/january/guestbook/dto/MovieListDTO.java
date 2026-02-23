@@ -10,7 +10,7 @@ public class MovieListDTO {
     private String title;
     private Long imageNumber;
     private int reviewCount;
-    private long gradeAverage;
+    private double gradeAverage;
 
     private LocalDateTime regDate;
 }

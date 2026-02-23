@@ -1,8 +1,12 @@
 package com.january.guestbook.service;
 
+import com.january.guestbook.domain.Movie;
+import com.january.guestbook.domain.MovieImage;
+import com.january.guestbook.dto.MovieDTO;
 import com.january.guestbook.dto.MovieListDTO;
 import com.january.guestbook.dto.PageRequestDTO;
 import com.january.guestbook.dto.PageResultDTO;
+import com.january.guestbook.mapper.MovieImageMapper;
 import com.january.guestbook.mapper.MovieMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -10,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Log4j2
@@ -17,6 +22,7 @@ import java.util.List;
 public class MovieServiceImpl implements MovieService {
 
     private final MovieMapper movieMapper;
+    private final MovieImageMapper movieImageMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -38,5 +44,17 @@ public class MovieServiceImpl implements MovieService {
                 requestDTO.getPage(),
                 requestDTO.getSize()
         );
+    }
+
+    @Override
+    public Long register(MovieDTO movieDTO) {
+        Map<String, Object> map = convertToMap(movieDTO);
+        Movie movie = (Movie) map.get("movie");
+        List<MovieImage> movieImageList = (List<MovieImage>) map.get("imageList");
+
+        movieMapper.insert(movie);
+        movieImageList.forEach(movieImageMapper::insert);
+
+        return movie.getMno();
     }
 }

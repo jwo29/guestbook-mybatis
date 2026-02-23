@@ -44,7 +44,7 @@
                 <th scope="row">[[${item.mno}]]</th>
                 <td>[[${item.title}]]</td>
                 <td>[[${item.reviewCount}]]</td>
-                <td>[[${item.gradeAverage}]]</td>
+                <td>[[${#numbers.formatDecimal(item.gradeAverage, 1, 2)}]]</td>
                 <td>[[${#temporals.format(item.regDate, 'yyyy/MM/dd')}]]</td>
             </tr>
             </tbody>

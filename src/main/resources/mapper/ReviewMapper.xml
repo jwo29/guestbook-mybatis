@@ -7,4 +7,10 @@
         INSERT INTO reviews (grade, text, member_no, movie_no, reg_date, mod_date)
         VALUES (#{grade}, #{text}, #{member.mno}, #{movie.mno}, now(), now());
     </insert>
+
+    <select id="findByMovie">
+        select *
+        from reviews
+        where movie_no = #{mno}
+    </select>
 </mapper>

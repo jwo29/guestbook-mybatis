@@ -38,6 +38,8 @@ dependencies {
     // JDBC
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
+    implementation 'net.coobird:thumbnailator:0.4.12'
+
     // PostgreSQL
     runtimeOnly 'org.postgresql:postgresql'
 
@@ -50,6 +52,7 @@ dependencies {
 
     // Test (JUnit5, MockMvc, AssertJ 등 전부 포함)
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
 }
 
 tasks.named('test') {

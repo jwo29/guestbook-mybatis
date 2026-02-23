@@ -9,11 +9,12 @@ import java.time.LocalDateTime;
 @Builder
 public class Review {
     private Long reviewNum;
-    private int grade;
-    private String text;
 
     private LocalDateTime regDate;
     private LocalDateTime modDate;
+
+    private int grade;
+    private String text;
 
     private Movie movie;
     private Member member;
