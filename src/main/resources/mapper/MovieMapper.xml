@@ -15,16 +15,26 @@
     </select>
 
     <select id="findAll">
-        select a.mno
+        SELECT a.mno
              , a.title
-             , max(inum) as image_num
-             , count(r) as review_count
-             , avg(r.grade) as grade_average
+             , count(r) AS review_count
+             , avg(r.grade) AS grade_average
              , a.reg_date
-        from movies a
-            left join movie_images b on a.mno = b.movie_mno
-            left join reviews r on a.mno = r.movie_no
-        group by a.mno;
+             , thumb.uuid as thumb_uuid
+             , thumb.img_name as thumb_img_name
+             , thumb.path as thumb_path
+        FROM movies a
+        LEFT JOIN (
+            SELECT movie_mno, uuid, img_name, path
+            from movie_images
+            where inum in (
+                select min(inum) from movie_images group by movie_mno
+            )
+        ) thumb on a.mno = thumb.movie_mno
+        LEFT JOIN reviews r ON a.mno = r.movie_no
+        GROUP BY a.mno, thumb.uuid, thumb.img_name, thumb.path
+        ORDER BY a.mno
+        LIMIT #{size} OFFSET #{offset};
     </select>
 
 </mapper>

@@ -4,7 +4,7 @@
     <th:block th:fragment="content">
         <h1 class="mt-4">Movie List page
             <span>
-                <a th:href="@{/board/register}">
+                <a th:href="@{/movie/register}">
                     <button type="button" class="btn btn-outline-primary">REGISTER</button>
                 </a>
             </span>
@@ -33,16 +33,16 @@
             <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">제목</th>
-                <th scope="col">리뷰 수</th>
-                <th scope="col">평점</th>
-                <th scope="col">등록일</th>
+                <th scope="col">Title & Picture</th>
+                <th scope="col">Review Count</th>
+                <th scope="col">AVG Rating</th>
+                <th scope="col">Reg date</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="item : ${result.data}">
-                <th scope="row">[[${item.mno}]]</th>
-                <td>[[${item.title}]]</td>
+                <th scope="row"><a th:href="@{/movie/read(movie_mno = ${item.mno}, page = ${result.page})}">[[${item.mno}]]</a></th>
+                <td><img th:if="${item.thumbPath != null}" th:src="|/display?fileName=${item.getThumbnailURL()}|">[[${item.title}]]</td>
                 <td>[[${item.reviewCount}]]</td>
                 <td>[[${#numbers.formatDecimal(item.gradeAverage, 1, 2)}]]</td>
                 <td>[[${#temporals.format(item.regDate, 'yyyy/MM/dd')}]]</td>

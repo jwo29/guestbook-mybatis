@@ -57,4 +57,9 @@ public class MovieServiceImpl implements MovieService {
 
         return movie.getMno();
     }
+
+    @Override
+    public MovieDTO findById(Long mno) {
+        return null;
+    }
 }

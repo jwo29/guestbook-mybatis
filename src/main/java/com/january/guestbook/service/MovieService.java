@@ -11,6 +11,7 @@ import java.util.Map;
 public interface MovieService {
     PageResultDTO<MovieListDTO> movieList(PageRequestDTO requestDTO);
     Long register(MovieDTO movieDTO);
+    MovieDTO findById(Long mno);
 
     // Map 타입으로 변환
     default Map<String, Object> convertToMap(MovieDTO movieDTO) {
