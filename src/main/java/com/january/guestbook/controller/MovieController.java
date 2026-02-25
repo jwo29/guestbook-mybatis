@@ -1,7 +1,7 @@
 package com.january.guestbook.controller;
 
-import com.january.guestbook.dto.MovieDTO;
 import com.january.guestbook.dto.MovieListDTO;
+import com.january.guestbook.dto.MovieRegisterDTO;
 import com.january.guestbook.dto.PageRequestDTO;
 import com.january.guestbook.dto.PageResultDTO;
 import com.january.guestbook.service.MovieService;
@@ -41,18 +41,22 @@ public class MovieController {
     }
 
     @PostMapping("/register")
-    public String register(MovieDTO movieDTO, RedirectAttributes redirectAttributes) {
-        log.info("movieDTO: {}", movieDTO);
+    public String register(MovieRegisterDTO movieRegisterDTO, RedirectAttributes redirectAttributes) {
+        log.info("movieDTO: {}", movieRegisterDTO);
 
-        Long mno = movieService.register(movieDTO);
+        Long mno = movieService.register(movieRegisterDTO);
 
         redirectAttributes.addFlashAttribute("msg", mno);
 
         return "redirect:/movie/list";
     }
 
-    @GetMapping("/read")
-    public void read(@RequestParam("mno") Long mno, Model model) {
-        log.info("Read movie");
+    @GetMapping({"/read", "/modify"})
+    public void read(@RequestParam("mno") Long mno,
+                     @ModelAttribute("requestDto") PageRequestDTO pageRequestDTO,
+                     Model model) {
+        log.info("Read movie: {}", mno);
+
+        model.addAttribute("dto", movieService.getMovieWithAll(mno));
     }
 }

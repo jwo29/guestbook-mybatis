@@ -2,10 +2,7 @@ package com.january.guestbook.service;
 
 import com.january.guestbook.domain.Movie;
 import com.january.guestbook.domain.MovieImage;
-import com.january.guestbook.dto.MovieDTO;
-import com.january.guestbook.dto.MovieListDTO;
-import com.january.guestbook.dto.PageRequestDTO;
-import com.january.guestbook.dto.PageResultDTO;
+import com.january.guestbook.dto.*;
 import com.january.guestbook.mapper.MovieImageMapper;
 import com.january.guestbook.mapper.MovieMapper;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +44,8 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Long register(MovieDTO movieDTO) {
-        Map<String, Object> map = convertToMap(movieDTO);
+    public Long register(MovieRegisterDTO movieRegisterDTO) {
+        Map<String, Object> map = convertToMap(movieRegisterDTO);
         Movie movie = (Movie) map.get("movie");
         List<MovieImage> movieImageList = (List<MovieImage>) map.get("imageList");
 
@@ -59,7 +56,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public MovieDTO findById(Long mno) {
-        return null;
+    public MovieDTO getMovieWithAll(Long mno) {
+        return movieMapper.getMovieWithAll(mno);
     }
 }

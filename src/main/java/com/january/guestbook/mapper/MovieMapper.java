@@ -1,6 +1,7 @@
 package com.january.guestbook.mapper;
 
 import com.january.guestbook.domain.Movie;
+import com.january.guestbook.dto.MovieDTO;
 import com.january.guestbook.dto.MovieListDTO;
 import com.january.guestbook.dto.PageRequestDTO;
 import org.apache.ibatis.annotations.Mapper;
@@ -14,4 +15,6 @@ public interface MovieMapper {
     List<MovieListDTO> findAll(PageRequestDTO requestDTO);
 
     long countAll(PageRequestDTO requestDTO);
+
+    MovieDTO getMovieWithAll(Long mno);
 }

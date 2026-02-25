@@ -41,7 +41,7 @@
             </thead>
             <tbody>
             <tr th:each="item : ${result.data}">
-                <th scope="row"><a th:href="@{/movie/read(movie_mno = ${item.mno}, page = ${result.page})}">[[${item.mno}]]</a></th>
+                <th scope="row"><a th:href="@{/movie/read(mno = ${item.mno}, page = ${result.page})}">[[${item.mno}]]</a></th>
                 <td><img th:if="${item.thumbPath != null}" th:src="|/display?fileName=${item.getThumbnailURL()}|">[[${item.title}]]</td>
                 <td>[[${item.reviewCount}]]</td>
                 <td>[[${#numbers.formatDecimal(item.gradeAverage, 1, 2)}]]</td>

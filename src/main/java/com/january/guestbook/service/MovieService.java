@@ -10,22 +10,23 @@ import java.util.Map;
 
 public interface MovieService {
     PageResultDTO<MovieListDTO> movieList(PageRequestDTO requestDTO);
-    Long register(MovieDTO movieDTO);
-    MovieDTO findById(Long mno);
+    Long register(MovieRegisterDTO movieRegisterDTO);
+    MovieDTO getMovieWithAll(Long mno);
+
 
     // Map 타입으로 변환
-    default Map<String, Object> convertToMap(MovieDTO movieDTO) {
+    default Map<String, Object> convertToMap(MovieRegisterDTO movieRegisterDTO) {
 
         Map<String, Object> map = new HashMap<>();
 
         Movie movie = Movie.builder()
-                .mno(movieDTO.getMno())
-                .title(movieDTO.getTitle())
+                .mno(movieRegisterDTO.getMno())
+                .title(movieRegisterDTO.getTitle())
                 .build();
 
         map.put("movie", movie);
 
-        List<MovieImageDTO> imageDTOList = movieDTO.getImages();
+        List<MovieImageDTO> imageDTOList = movieRegisterDTO.getImages();
 
         // MovieImageDTO 처리
         if (imageDTOList != null && !imageDTOList.isEmpty()) {

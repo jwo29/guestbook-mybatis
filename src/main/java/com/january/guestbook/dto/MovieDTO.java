@@ -1,23 +1,19 @@
 package com.january.guestbook.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class MovieDTO {
-
     private Long mno;
-
     private String title;
+    private int reviewCount;
+    private double gradeAverage;
 
-    @Builder.Default
-    private List<MovieImageDTO> images = new ArrayList<>();
+    private LocalDateTime regDate;
+    private LocalDateTime modDate;
+
+    private List<MovieImageDTO> images;
 }

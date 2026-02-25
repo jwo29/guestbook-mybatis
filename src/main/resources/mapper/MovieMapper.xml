@@ -4,6 +4,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.january.guestbook.mapper.MovieMapper">
 
+    <resultMap id="movieDetailMap" type="com.january.guestbook.dto.MovieDTO">
+        <id property="mno" column="mno"/>
+        <result property="title" column="title"/>
+        <result property="reviewCount" column="review_count"/>
+        <result property="gradeAverage" column="grade_average"/>
+        <result property="regDate" column="reg_date"/>
+        <result property="modDate" column="mod_date"/>
+        <collection property="images" ofType="com.january.guestbook.dto.MovieImageDTO">
+            <result property="uuid" column="uuid"/>
+            <result property="imgName" column="img_name"/>
+            <result property="path" column="path"/>
+        </collection>
+    </resultMap>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="mno">
         INSERT INTO movies (title, reg_date, mod_date)
         values (#{title}, now(), now());
@@ -35,6 +49,23 @@
         GROUP BY a.mno, thumb.uuid, thumb.img_name, thumb.path
         ORDER BY a.mno
         LIMIT #{size} OFFSET #{offset};
+    </select>
+
+    <select id="getMovieWithAll" resultMap="movieDetailMap">
+        select m.mno
+             , m.title
+             , m.reg_date
+             , m.mod_date
+             , count(r) as review_count
+             , avg(r.grade) as grade_average
+             , mi.uuid
+             , mi.img_name
+             , mi.path
+        from movies m
+        left join movie_images mi on m.mno = mi.movie_mno
+        left join reviews r on m.mno = r.movie_no
+        where m.mno = #{mno}
+        group by m.mno, mi.inum
     </select>
 
 </mapper>
