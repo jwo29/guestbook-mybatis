@@ -33,8 +33,18 @@
     </select>
 
     <select id="countAll">
-        select count(*)
-        from movies;
+        SELECT count(*)
+        FROM movies
+        WHERE mno > 0
+        <if test="type != null and keyword != null and keyword != ''">
+            AND (
+            <trim prefixOverrides="OR">
+                <if test='type.contains("t")'>
+                    OR title LIKE CONCAT('%', #{keyword}, '%')
+                </if>
+            </trim>
+            )
+        </if>
     </select>
 
     <select id="findAll">
@@ -55,6 +65,16 @@
             )
         ) thumb on a.mno = thumb.movie_mno
         LEFT JOIN reviews r ON a.mno = r.movie_no
+        WHERE a.mno > 0
+        <if test="type != null and keyword != null and keyword != ''">
+            AND (
+            <trim prefixOverrides="OR">
+                <if test='type.contains("t")'>
+                    OR title LIKE CONCAT('%', #{keyword}, '%')
+                </if>
+            </trim>
+            )
+        </if>
         GROUP BY a.mno, thumb.uuid, thumb.img_name, thumb.path
         ORDER BY a.mno
         LIMIT #{size} OFFSET #{offset};

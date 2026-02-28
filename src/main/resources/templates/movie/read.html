@@ -60,6 +60,9 @@
                 </li>
             </ul>
         </div>
+
+        <a th:href="@{/movie/list(page = ${requestDto.page}, type = ${requestDto.type}, size = ${requestDto.size})}"><button type="button" class="btn btn-info">List</button></a>
+
         <button type="button" class="btn btn-primary">
             Review Count <span class="badge badge-light" th:text="${dto.reviewCount}"></span>
         </button>
