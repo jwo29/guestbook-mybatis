@@ -55,7 +55,7 @@
         </style>
         <div class="uploadResult">
             <ul>
-                <li th:each="image : ${dto.images}">
+                <li th:each="image : ${dto.images}" th:data-file="${image.getThumbnailURL()}">
                     <img th:if="${image.path != null}" th:src="|/display?fileName=${image.getThumbnailURL()}|" width="200" height="200">
                 </li>
             </ul>

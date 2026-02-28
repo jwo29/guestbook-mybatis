@@ -4,7 +4,6 @@ import com.january.guestbook.dto.UploadResultDTO;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnailator;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +31,8 @@ import java.util.UUID;
 @Log4j2
 public class UploadController {
 
-    private final AbstractScriptDatabaseInitializer abstractScriptDatabaseInitializer;
-    @Value("${com.january.guestbook.upload.path}")
+    @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
-
-    public UploadController(AbstractScriptDatabaseInitializer abstractScriptDatabaseInitializer) {
-        this.abstractScriptDatabaseInitializer = abstractScriptDatabaseInitializer;
-    }
 
     @PostMapping("/uploadAjax")
     public ResponseEntity<List<UploadResultDTO>> uploadFile(MultipartFile[] files) {
