@@ -1,12 +1,14 @@
 package com.january.guestbook.domain;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Review {
     private Long reviewNum;
 
@@ -18,4 +20,11 @@ public class Review {
 
     private Movie movie;
     private Member member;
+
+    public void changeGrade(int grade) {
+        this.grade = grade;
+    }
+    public void changeText(String text) {
+        this.text = text;
+    }
 }

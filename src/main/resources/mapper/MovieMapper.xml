@@ -23,6 +23,15 @@
         values (#{title}, now(), now());
     </insert>
 
+    <select id="getById">
+        select mno
+             , title
+             , reg_date
+             , mod_date
+        from movies
+        where mno = #{mno};
+    </select>
+
     <select id="countAll">
         select count(*)
         from movies;

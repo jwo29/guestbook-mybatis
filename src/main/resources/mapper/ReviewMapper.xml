@@ -3,14 +3,87 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.january.guestbook.mapper.ReviewMapper">
+
+    <resultMap id="reviewResultMap" type="com.january.guestbook.domain.Review">
+        <id property="reviewNum" column="review_num"/>
+        <result property="regDate" column="review_reg_date"/>
+        <result property="modDate" column="review_mod_date"/>
+        <result property="grade" column="grade"/>
+        <result property="text" column="text"/>
+        <association property="movie" javaType="com.january.guestbook.domain.Movie">
+            <id property="mno" column="movie_no"/>
+            <result property="title" column="title"/>
+            <result property="regDate" column="movie_reg_date"/>
+            <result property="modDate" column="movie_mod_date"/>
+        </association>
+        <association property="member" javaType="com.january.guestbook.domain.Member">
+            <id property="mno" column="member_no"/>
+            <result property="name" column="name"/>
+            <result property="email" column="email"/>
+            <result property="password" column="password"/>
+            <result property="regDate" column="member_reg_date"/>
+            <result property="modDate" column="member_mod_date"/>
+        </association>
+    </resultMap>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="reviewNum">
         INSERT INTO reviews (grade, text, member_no, movie_no, reg_date, mod_date)
         VALUES (#{grade}, #{text}, #{member.mno}, #{movie.mno}, now(), now());
     </insert>
+
+    <select id="getByReviewNum" resultMap="reviewResultMap">
+        select r.review_num
+             , r.reg_date as review_reg_date
+             , r.mod_date as review_mod_date
+             , r.grade
+             , r.text
+             , m1.mno as movie_no
+             , m1.title
+             , m1.reg_date as movie_reg_date
+             , m1.mod_date as movie_mod_date
+             , m2.mno as member_no
+             , m2.email
+             , m2.password
+             , m2.name
+             , m2.reg_date as member_reg_date
+             , m2.mod_date as member_mod_date
+        from reviews r
+        inner join movies m1 on r.movie_no = m1.mno
+        inner join members m2 on r.member_no = m2.mno
+        where review_num = #{reviewNum};
+    </select>
 
     <select id="findByMovie">
         select *
         from reviews
         where movie_no = #{mno}
     </select>
+
+    <select id="getListOfMovie">
+        select r.review_num
+             , r.movie_no as mno
+             , r.member_no
+             , m.name
+             , m.email
+             , r.grade
+             , r.text
+             , r.reg_date
+             , r.mod_date
+        from reviews r
+        left join members m on r.member_no = m.mno
+        where r.movie_no = #{mno};
+    </select>
+
+    <update id="modify">
+        update reviews
+        set grade = #{grade}
+        , text = #{text}
+        , mod_date = now()
+        where review_num = #{reviewNum};
+    </update>
+
+    <delete id="delete">
+        delete from reviews
+        where review_num = #{reviewNum};
+    </delete>
 </mapper>

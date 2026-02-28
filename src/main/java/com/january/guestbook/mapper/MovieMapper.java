@@ -12,6 +12,10 @@ import java.util.List;
 public interface MovieMapper {
     void insert(Movie movie);
 
+    Movie getById(Long mno);
+
+    void update(Movie movie);
+
     List<MovieListDTO> findAll(PageRequestDTO requestDTO);
 
     long countAll(PageRequestDTO requestDTO);
