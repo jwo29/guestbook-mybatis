@@ -27,8 +27,8 @@
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="reviewNum">
-        INSERT INTO reviews (grade, text, member_no, movie_no, reg_date, mod_date)
-        VALUES (#{grade}, #{text}, #{member.mno}, #{movie.mno}, now(), now());
+        INSERT INTO reviews (grade, text, member_email, movie_no, reg_date, mod_date)
+        VALUES (#{grade}, #{text}, #{member.email}, #{movie.mno}, now(), now());
     </insert>
 
     <select id="getByReviewNum" resultMap="reviewResultMap">
@@ -49,7 +49,7 @@
              , m2.mod_date as member_mod_date
         from reviews r
         inner join movies m1 on r.movie_no = m1.mno
-        inner join members m2 on r.member_no = m2.mno
+        inner join members m2 on r.member_email = m2.email
         where review_num = #{reviewNum};
     </select>
 
@@ -62,7 +62,7 @@
     <select id="getListOfMovie">
         select r.review_num
              , r.movie_no as mno
-             , r.member_no
+             , r.member_email
              , m.name
              , m.email
              , r.grade
@@ -70,7 +70,7 @@
              , r.reg_date
              , r.mod_date
         from reviews r
-        left join members m on r.member_no = m.mno
+        left join members m on r.member_email = m.email
         where r.movie_no = #{mno};
     </select>
 

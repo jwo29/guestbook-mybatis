@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 @SpringBootTest
@@ -28,7 +27,6 @@ public class BoardMapperTest {
     public void insert() {
         LongStream.range(1, 100).forEach(i -> {
             Member member = Member.builder()
-                    .mno(i)
                     .email("user" + i + "@aaa.com")
                     .build();
 

@@ -29,6 +29,10 @@ dependencies {
     // Web (Spring MVC + Tomcat 포함)
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
     // Thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
@@ -52,6 +56,7 @@ dependencies {
 
     // Test (JUnit5, MockMvc, AssertJ 등 전부 포함)
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
 
 }
 

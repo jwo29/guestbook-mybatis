@@ -35,3 +35,11 @@ mybatis:
     call-setters-on-nulls: true
     jdbc-type-for-null: null
 
+logging:
+  level:
+    org:
+      springframework:
+        security:
+          web: trace
+    com:
+      january: debug

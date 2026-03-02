@@ -5,15 +5,27 @@
 <mapper namespace="com.january.guestbook.mapper.MemberMapper">
 
     <select id="getMemberByEmail">
-        select mno
-             , name
-             , email
-        from members
-        where email = #{email}
+        select m.mno
+             , m.name
+             , m.email
+        from members m
+        where m.email = #{email}
     </select>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="mno">
         INSERT INTO members (email, password, name, reg_date, mod_date)
         VALUES (#{email}, #{password}, #{name}, now(), now());
+    </insert>
+
+    <update id="modifyUserInfo">
+        update members
+        set password = #{password}
+        , from_social = #{fromSocial}
+        where email = #{email}
+    </update>
+
+    <insert id="setMemberRole">
+        insert into member_roles (email, role)
+        values (#{email}, #{role});
     </insert>
 </mapper>

@@ -8,4 +8,7 @@ public interface MemberMapper {
 
     Member getMemberByEmail(String email);
     void save(Member member);
+    void modifyUserInfo(Member member);
+
+    void setMemberRole(Member member);
 }

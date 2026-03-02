@@ -22,7 +22,7 @@
     <select id="countAll" resultType="long">
         SELECT COUNT(*)
         FROM boards b
-        INNER JOIN members m ON b.writer_no = m.mno
+        INNER JOIN members m ON b.writer_email = m.email
         WHERE gno > 0
         <if test="type != null and keyword != null and keyword != ''">
             AND (
@@ -51,7 +51,7 @@
         , m.name as writer_name
         , m.email as writer_email
         FROM boards b
-        INNER JOIN members m ON b.writer_no = m.mno
+        INNER JOIN members m ON b.writer_email = m.email
         LEFT JOIN replys r on b.gno = r.gno
         WHERE b.gno > 0
         <if test="type != null and keyword != null and keyword != ''">
@@ -85,7 +85,7 @@
              , m.email
              , m.name
         FROM boards b
-        INNER JOIN members m ON b.writer_no = m.mno
+        INNER JOIN members m ON b.writer_email = m.email
         WHERE gno = #{gno}
     </select>
 
@@ -100,7 +100,7 @@
              , m.email as writer_email
              , count(r.rno) as reply_count
         FROM boards b
-        INNER JOIN members m ON b.writer_no = m.mno
+        INNER JOIN members m ON b.writer_email = m.email
         LEFT JOIN replys r ON b.gno = r.gno
         WHERE b.gno = #{gno}
         GROUP BY b.gno, m.name, m.email
@@ -108,8 +108,8 @@
 
     <!-- 게시글 등록 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="gno">
-        INSERT INTO boards (title, content, writer_no, reg_date, mod_date)
-        VALUES (#{title}, #{content}, #{writer.mno}, NOW(), NOW())
+        INSERT INTO boards (title, content, writer_email, reg_date, mod_date)
+        VALUES (#{title}, #{content}, #{writer.email}, NOW(), NOW())
     </insert>
 
     <!-- 게시글 수정 -->

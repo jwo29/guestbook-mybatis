@@ -29,7 +29,7 @@ public class ReviewMapperTest {
                     .grade((int)(Math.random()*5) + 1)
                     .text("이 영화에 대한 감상..." + i)
                     .movie(Movie.builder().mno(mno).build())
-                    .member(Member.builder().mno(mid).build())
+                    .member(Member.builder().email("user" + mid + "@aaa.com").build())
                     .build();
 
             reviewMapper.insert(review);
