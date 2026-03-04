@@ -2,6 +2,7 @@ package com.january.guestbook.controller;
 
 import com.january.guestbook.security.dto.AuthMemberDTO;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class SampleController {
 
     // 로그인을 하지 않아도 접근 가능
+//    @PreAuthorize("permitAll()")
     @GetMapping("/all")
     public void all() {
         log.info("all() ............");
     }
 
     // 로그인한 사용자만 접근 가능
+//    @PreAuthorize("hasRole('USER')")
     @GetMapping("/member")
     public void member(@AuthenticationPrincipal AuthMemberDTO member) {
         log.info("member() ............");
@@ -31,6 +34,7 @@ public class SampleController {
     }
 
     // 관리자 권한이 있는 사용자만 접근 가능
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
     public void admin() {
         log.info("admin() ............");
