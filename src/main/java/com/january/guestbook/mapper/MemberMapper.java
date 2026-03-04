@@ -11,4 +11,6 @@ public interface MemberMapper {
     void modifyUserInfo(Member member);
 
     void setMemberRole(Member member);
+
+    void setMemberRoles(Member member);
 }

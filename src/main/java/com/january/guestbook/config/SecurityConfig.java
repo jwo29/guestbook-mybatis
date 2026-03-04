@@ -1,5 +1,6 @@
 package com.january.guestbook.config;
 
+import com.january.guestbook.security.handler.MemberLoginSuccessHandler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -7,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
 
         http
                 .authorizeHttpRequests(auth -> auth
@@ -43,6 +45,14 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
                 )
+                .oauth2Login(oauth -> oauth
+//                        .defaultSuccessUrl("/", true) // successHandler가 설정되면 defaultSuccessUrl은 무시된다.
+                        .successHandler(successHandler()))
+                // Remember me 설정 시 자동으로 기본 로그인 화면에 자동 로그인 여부 체크박스가 생성된다.
+                // ※ 소셜 로그인으로 로그인했을 때는 Remember me를 사용할 수 없다.(즉, remember-me 쿠키를 생성하지 않는다)
+                .rememberMe(me -> me
+                        .tokenValiditySeconds(60*60*24*7) // 7일
+                        .userDetailsService(userDetailsService))
                 // 로그인 방식이 세션 기반 + 브라우저 서비스라면 CSRF 토큰 비활성화는 보안 상 위험하다.
                 // **학습 목적이기에 이렇게 세팅하는 것이고**,
                 // Stateless API(JWT, Bearer Token)과 같이 Authorization 헤더 기반 인증인 경우에는 CSRF 토큰이 불필요하니,
@@ -52,20 +62,14 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    @Bean
-//    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-////        return new InMemoryUserDetailsManager(
-////                User.builder()
-////                        .username("user1")
-////                        .password(passwordEncoder.encode("1111"))
-////                        .roles("USER")
-////                        .build()
-////        );
-//        return new MemberUserDetailService();
-//    }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public MemberLoginSuccessHandler successHandler() {
+        return new MemberLoginSuccessHandler(passwordEncoder());
+    }
+
 }

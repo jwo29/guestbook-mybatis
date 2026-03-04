@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -16,13 +17,16 @@ import java.util.Set;
 @AllArgsConstructor
 public class Member {
 
+    private Long mno;
+
     private String email;       // 아이디 역할
     private String password;
     private String name;        // 닉네임
 
     private boolean fromSocial; // 소셜 로그인으로 회원 가입된 경우
 
-    private Set<MemberRole> roleSet;
+    @Builder.Default
+    private Set<MemberRole> roleSet = new HashSet<>();
 
     private LocalDateTime regDate;
     private LocalDateTime modDate;

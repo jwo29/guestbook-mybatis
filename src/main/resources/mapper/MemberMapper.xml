@@ -8,13 +8,15 @@
         select m.mno
              , m.name
              , m.email
+             , m.password
+             , m.from_social
         from members m
         where m.email = #{email}
     </select>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="mno">
-        INSERT INTO members (email, password, name, reg_date, mod_date)
-        VALUES (#{email}, #{password}, #{name}, now(), now());
+        INSERT INTO members (email, password, name, from_social, reg_date, mod_date)
+        VALUES (#{email}, #{password}, #{name}, #{fromSocial}, now(), now());
     </insert>
 
     <update id="modifyUserInfo">
@@ -27,5 +29,13 @@
     <insert id="setMemberRole">
         insert into member_roles (email, role)
         values (#{email}, #{role});
+    </insert>
+
+    <insert id="setMemberRoles">
+        insert into member_roles (email, role)
+        values
+        <foreach collection="roleSet" item="role" separator=",">
+            (#{email}, #{role})
+        </foreach>
     </insert>
 </mapper>
