@@ -1,26 +1,122 @@
 package com.january.guestbook.config;
 
+import com.january.guestbook.security.filter.ApiCheckFilter;
+import com.january.guestbook.security.filter.ApiLoginFilter;
 import com.january.guestbook.security.handler.MemberLoginSuccessHandler;
+import com.january.guestbook.security.util.JWTUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@Log4j2
 @Configuration
 @EnableWebSecurity
-//@EnableMethodSecurity
-@Log4j2
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final UserDetailsService userDetailsService;
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
+    public JWTUtil jwtUtil() {
+        return new JWTUtil();
+    }
+
+    /**
+     * 토큰 검증
+     * @return
+     */
+    @Bean
+    public ApiCheckFilter apiCheckFilter() {
+        return new ApiCheckFilter("/v2/board/**", jwtUtil());
+    }
+
+
+    /**
+     * SecurityFilterChain #1 - API Security (Stateless)
+     * - API 서버
+     * - /api/**
+     * - JWT / Token 인증
+     * - STATELESS
+     *
+     * 흐름:
+     * Client
+     * ↓
+     * POST /api/login
+     * ↓
+     * ApiLoginFilter
+     * ↓
+     * AuthenticationManager
+     * ↓
+     * UserDetailsService
+     * ↓
+     * Authentication 성공
+     * ↓
+     * Token 생성
+     * ↓
+     * JSON 응답
+     */
+    @Bean
+    @Order(1)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+
+        AuthenticationManagerBuilder builder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        builder.userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
+
+        AuthenticationManager authenticationManager = builder.build();
+
+        ApiLoginFilter apiLoginFilter =
+                new ApiLoginFilter(authenticationManager, jwtUtil());
+
+        http
+                // 반드시 필요
+                .authenticationManager(authenticationManager)
+
+                .securityMatcher("/api/**", "/v2/board/**")
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                // 로그인 방식이 세션 기반 + 브라우저 서비스라면 CSRF 토큰 비활성화는 보안 상 위험하다.
+                // Stateless API(JWT, Bearer Token)과 같이 Authorization 헤더 기반 인증인 경우에는 CSRF 토큰이 불필요하니,
+                // 이 경우에는 비활성화해도 상관없다.
+                .csrf(AbstractHttpConfigurer::disable)
+
+                .addFilterBefore(apiLoginFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(apiCheckFilter(), ApiLoginFilter.class)
+
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/v2/board/**").authenticated()
+                );
+        return http.build();
+    }
+
+    /**
+     * SecurityFilterChain #2 - Web Security (Session 기반)
+     * - 웹 서비스
+     * - /**
+     * - Session 기반 로그인
+     * - formLogin + OAuth2
+     */
+    @Bean
+    @Order(2)
+    public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
 
         http
                 .authorizeHttpRequests(auth -> auth
@@ -41,26 +137,25 @@ public class SecurityConfig {
                         .requestMatchers("/sample/member").hasRole("USER")
                         .anyRequest().authenticated()
                 )
-                // 인증/인가 문제 시 로그인 화면으로 이동
                 .formLogin(form -> form
                         .defaultSuccessUrl("/", true)
+                )
+                .oauth2Login(oauth -> oauth
+//                        .defaultSuccessUrl("/", true) // successHandler가 설정되면 defaultSuccessUrl은 무시된다.
+                        .successHandler(successHandler())
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
                 )
-                .oauth2Login(oauth -> oauth
-//                        .defaultSuccessUrl("/", true) // successHandler가 설정되면 defaultSuccessUrl은 무시된다.
-                        .successHandler(successHandler()))
                 // Remember me 설정 시 자동으로 기본 로그인 화면에 자동 로그인 여부 체크박스가 생성된다.
                 // ※ 소셜 로그인으로 로그인했을 때는 Remember me를 사용할 수 없다.(즉, remember-me 쿠키를 생성하지 않는다)
                 .rememberMe(me -> me
                         .tokenValiditySeconds(60*60*24*7) // 7일
-                        .userDetailsService(userDetailsService))
-                // 로그인 방식이 세션 기반 + 브라우저 서비스라면 CSRF 토큰 비활성화는 보안 상 위험하다.
-                // **학습 목적이기에 이렇게 세팅하는 것이고**,
-                // Stateless API(JWT, Bearer Token)과 같이 Authorization 헤더 기반 인증인 경우에는 CSRF 토큰이 불필요하니,
-                // 이 경우에는 비활성화해도 상관없다.
-                .csrf(AbstractHttpConfigurer::disable);
+                        .userDetailsService(userDetailsService)
+                )
+
+                .csrf(AbstractHttpConfigurer::disable)
+        ;
 
         return http.build();
     }

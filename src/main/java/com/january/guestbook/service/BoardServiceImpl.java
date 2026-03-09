@@ -72,6 +72,11 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public List<BoardDTO> readAll(String email) {
+        return boardMapper.findListByWriter(email);
+    }
+
+    @Override
     public void modify(BoardModifyDTO boardModifyDTO) {
         Board update = boardMapper.findByGno(boardModifyDTO.getGno());
 

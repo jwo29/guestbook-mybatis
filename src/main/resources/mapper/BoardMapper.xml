@@ -89,6 +89,23 @@
         WHERE gno = #{gno}
     </select>
 
+    <!--  특정 사용자의 게시글 목록 조회  -->
+    <select id="findListByWriter">
+        SELECT b.gno
+             , b.title
+             , b.content
+             , b.reg_date as board_reg_date
+             , b.mod_date as board_mod_date
+             , m.mno
+             , m.email
+             , m.name
+        FROM boards b
+        INNER JOIN members m ON b.writer_email = m.email
+        LEFT JOIN replys r ON b.gno = r.gno
+        WHERE m.email = #{email}
+        GROUP BY b.gno, m.name, m.email
+    </select>
+
     <!-- 단건 조회 with 댓글 수 -->
     <select id="findByGnoWithReplyCount">
         SELECT b.gno

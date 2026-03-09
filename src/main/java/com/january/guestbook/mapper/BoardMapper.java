@@ -13,6 +13,8 @@ public interface BoardMapper {
 
     Board findByGno(Long gno);
 
+    List<BoardDTO> findListByWriter(String email);
+
     BoardDTO findByGnoWithReplyCount(Long gno);
 
     List<BoardListDTO> findAll(PageRequestDTO requestDTO);
