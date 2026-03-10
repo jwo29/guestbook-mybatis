@@ -1,31 +1,31 @@
 package com.january.guestbook.security.filter;
 
+import com.january.guestbook.security.dto.AuthMemberDTO;
 import com.january.guestbook.security.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
+import net.minidev.json.JSONObject;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.AntPathMatcher;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.PrintWriter;
 
 @Log4j2
 public class ApiCheckFilter extends OncePerRequestFilter {
 
-    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
-    private final String pattern;
+    private final UserDetailsService userDetailsService;
     private final JWTUtil jwtUtil;
 
-    public ApiCheckFilter(String pattern, JWTUtil jwtUtil) {
-        this.pattern = pattern;
+    public ApiCheckFilter(JWTUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -35,17 +35,22 @@ public class ApiCheckFilter extends OncePerRequestFilter {
 
         log.info("Request URI: " + uri);
 
-        // /v2/board/** 가 아니면 그냥 통과
-        if (!antPathMatcher.match(pattern, uri)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         log.info("ApiCheckFilter 실행 -------------------------------");
 
         // 여기서 JWT 검사
         if (!checkAuthHeader(request)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+
+            // JSON 리턴
+            String message = "FAIL CHECK API TOKEN";
+
+            JSONObject json = new JSONObject();
+            json.put("message", message);
+            json.put("code", "403");
+
+            PrintWriter out = response.getWriter();
+            out.println(json);
+
             return;
         }
 
@@ -65,11 +70,13 @@ public class ApiCheckFilter extends OncePerRequestFilter {
                 String email = jwtUtil.validateAndExtract(token);
                 log.info("validate result: {}", email);
 
+                AuthMemberDTO authMemberDTO = (AuthMemberDTO) userDetailsService.loadUserByUsername(email);
+
                 if (!email.isEmpty()) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             email,
                             null,
-                            List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                            authMemberDTO.getAuthorities());
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     return true;

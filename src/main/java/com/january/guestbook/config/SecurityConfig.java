@@ -2,6 +2,7 @@ package com.january.guestbook.config;
 
 import com.january.guestbook.security.filter.ApiCheckFilter;
 import com.january.guestbook.security.filter.ApiLoginFilter;
+import com.january.guestbook.security.handler.ApiLoginFailHandler;
 import com.january.guestbook.security.handler.MemberLoginSuccessHandler;
 import com.january.guestbook.security.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -29,21 +30,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
-
-    @Bean
-    public JWTUtil jwtUtil() {
-        return new JWTUtil();
-    }
-
-    /**
-     * 토큰 검증
-     * @return
-     */
-    @Bean
-    public ApiCheckFilter apiCheckFilter() {
-        return new ApiCheckFilter("/v2/board/**", jwtUtil());
-    }
-
+    private final JWTUtil jwtUtil;
 
     /**
      * SecurityFilterChain #1 - API Security (Stateless)
@@ -81,24 +68,31 @@ public class SecurityConfig {
 
         AuthenticationManager authenticationManager = builder.build();
 
-        ApiLoginFilter apiLoginFilter =
-                new ApiLoginFilter(authenticationManager, jwtUtil());
+        ApiLoginFilter apiLoginFilter = new ApiLoginFilter(authenticationManager, jwtUtil);
+
+        apiLoginFilter.setAuthenticationFailureHandler(new ApiLoginFailHandler());
+
+        ApiCheckFilter apiCheckFilter = new ApiCheckFilter(jwtUtil, userDetailsService);
 
         http
                 // 반드시 필요
                 .authenticationManager(authenticationManager)
 
-                .securityMatcher("/api/**", "/v2/board/**")
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
                 // 로그인 방식이 세션 기반 + 브라우저 서비스라면 CSRF 토큰 비활성화는 보안 상 위험하다.
                 // Stateless API(JWT, Bearer Token)과 같이 Authorization 헤더 기반 인증인 경우에는 CSRF 토큰이 불필요하니,
                 // 이 경우에는 비활성화해도 상관없다.
                 .csrf(AbstractHttpConfigurer::disable)
 
+                .securityMatcher("/api/**", "/v2/board/**")
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // 일반적으로 ApiCheckFilter를 ApiLoginFilter 앞에 배치하는 이류는 다음 때문이다.
+                // JWT 인증 → 가장 먼저 수행
+                // 로그인 처리 → 특수 케이스
+                .addFilterBefore(apiCheckFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(apiLoginFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(apiCheckFilter(), ApiLoginFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login").permitAll()
@@ -154,7 +148,8 @@ public class SecurityConfig {
                         .userDetailsService(userDetailsService)
                 )
 
-                .csrf(AbstractHttpConfigurer::disable)
+//                .csrf(Customizer.withDefaults()) // 실무 권장
+                .csrf(AbstractHttpConfigurer::disable) // 테스트용
         ;
 
         return http.build();

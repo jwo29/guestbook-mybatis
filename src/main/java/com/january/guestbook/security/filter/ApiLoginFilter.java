@@ -57,8 +57,10 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
         try {
             token = jwtUtil.generateToken(email);
 
-            response.setContentType("text/plain");
-            response.getOutputStream().write(token.getBytes());
+//            response.setContentType("text/plain");
+//            response.getOutputStream().write(token.getBytes());
+            response.setContentType("application/json");
+            response.getWriter().write("{\"token\":\""+token+"\"}");
 
             log.info(token);
         } catch (Exception e) {
@@ -70,8 +72,6 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
 //        // 여기서 JWT 생성
 //        String token = jwtUtil.generateToken(user.getUsername());
 //
-//        response.setContentType("application/json");
-//        response.getWriter().write("{\"token\":\""+token+"\"}");
     }
 
 }

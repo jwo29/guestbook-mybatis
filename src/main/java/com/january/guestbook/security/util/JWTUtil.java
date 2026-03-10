@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -12,6 +13,7 @@ import java.util.Date;
 
 // 스프링 환경이 아닌 곳에서 사용할 수 있도록 간단한 유티리티 클래스로 설계
 @Log4j2
+@Component
 public class JWTUtil {
 
     private String secretKey = "guestbook12345678guestbook12345678";
@@ -26,8 +28,7 @@ public class JWTUtil {
 
         return Jwts.builder()
                 .issuedAt(new Date())
-//                .expiration(Date.from(ZonedDateTime.now().plusMinutes(expire).toInstant()))
-                .expiration(Date.from(ZonedDateTime.now().plusSeconds(1).toInstant()))
+                .expiration(Date.from(ZonedDateTime.now().plusMinutes(expire).toInstant()))
                 .subject(content)
                 .signWith(key)
                 .compact();
