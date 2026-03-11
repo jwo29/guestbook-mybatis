@@ -1,7 +1,8 @@
 package com.january.guestbook.config;
 
-import com.january.guestbook.security.filter.ApiCheckFilter;
 import com.january.guestbook.security.filter.ApiLoginFilter;
+import com.january.guestbook.security.filter.JWTAuthenticationFilter;
+import com.january.guestbook.security.filter.JWTExceptionFilter;
 import com.january.guestbook.security.handler.ApiLoginFailHandler;
 import com.january.guestbook.security.handler.MemberLoginSuccessHandler;
 import com.january.guestbook.security.util.JWTUtil;
@@ -12,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -58,41 +59,40 @@ public class SecurityConfig {
      */
     @Bean
     @Order(1)
-    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http, AuthenticationConfiguration configuration) throws Exception {
 
-        AuthenticationManagerBuilder builder =
-                http.getSharedObject(AuthenticationManagerBuilder.class);
-
-        builder.userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder());
-
-        AuthenticationManager authenticationManager = builder.build();
+        AuthenticationManager authenticationManager = configuration.getAuthenticationManager();
 
         ApiLoginFilter apiLoginFilter = new ApiLoginFilter(authenticationManager, jwtUtil);
 
         apiLoginFilter.setAuthenticationFailureHandler(new ApiLoginFailHandler());
 
-        ApiCheckFilter apiCheckFilter = new ApiCheckFilter(jwtUtil, userDetailsService);
+        JWTExceptionFilter jwtExceptionFilter = new JWTExceptionFilter();
+
+        JWTAuthenticationFilter jwtAuthenticationFilter = new JWTAuthenticationFilter(jwtUtil, userDetailsService);
 
         http
-                // 반드시 필요
-                .authenticationManager(authenticationManager)
+                .securityMatcher("/api/**", "/v2/board/**")
+
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
 
                 // 로그인 방식이 세션 기반 + 브라우저 서비스라면 CSRF 토큰 비활성화는 보안 상 위험하다.
                 // Stateless API(JWT, Bearer Token)과 같이 Authorization 헤더 기반 인증인 경우에는 CSRF 토큰이 불필요하니,
                 // 이 경우에는 비활성화해도 상관없다.
                 .csrf(AbstractHttpConfigurer::disable)
 
-                .securityMatcher("/api/**", "/v2/board/**")
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                // 반드시 필요
+                .authenticationManager(authenticationManager)
 
+                // JWTExceptionFilter 는 ApiCheckFilter 앞에 위치해야 ApiCheckFilter에서 발생한 예외를 잡을 수 있다.
+                .addFilterBefore(jwtExceptionFilter, UsernamePasswordAuthenticationFilter.class)
                 // 일반적으로 ApiCheckFilter를 ApiLoginFilter 앞에 배치하는 이류는 다음 때문이다.
                 // JWT 인증 → 가장 먼저 수행
                 // 로그인 처리 → 특수 케이스
-                .addFilterBefore(apiCheckFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(apiLoginFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter, JWTExceptionFilter.class)
+                .addFilterAfter(apiLoginFilter, JWTAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login").permitAll()
@@ -155,11 +155,17 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * PasswordEncoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * OAuth2 Login Success Handler
+     */
     @Bean
     public MemberLoginSuccessHandler successHandler() {
         return new MemberLoginSuccessHandler(passwordEncoder());
